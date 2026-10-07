@@ -1,13 +1,10 @@
 # Dual-Use Notice and Responsible Use
-<br>
 
-# DRAFT BEFORE ANSSI ANNEXE-I v2 Declaration
-<br>
-ØMYSTIK is **dual-use technology**: it is designed and documented for both civil and
-defense applications. This document states what that means for anyone who obtains,
-builds, deploys, redistributes, or contributes to this software.
-
-Read it before you deploy.
+> **§5 is provisional.** A declaration covering this software is being prepared for
+> France's national cybersecurity agency (ANSSI), under décret n° 2007-663. That filing
+> adds to §5 rather than changing it: no export classification has been obtained, and an
+> ANSSI declaration is not one. The rest of this document is not affected. This note goes
+> when the declaration is filed.
 
 ---
 
