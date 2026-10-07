@@ -10,7 +10,7 @@
 carries and computes data it cannot read, for peers it does not trust.**
 
 
-![Version: v0.2.0](https://img.shields.io/badge/version-v0.2.0-green.svg)
+![Version: v0.2.1](https://img.shields.io/badge/version-v0.2.1-green.svg)
 [![License: BSD-3-Clause-Clear](https://img.shields.io/badge/License-BSD--3--Clause--Clear-blue.svg)](LICENSING.md)
 [![Status: pre-production](https://img.shields.io/badge/status-pre--production-orange.svg)](SECURITY.md)
 [![Dual-use](https://img.shields.io/badge/use-dual--use-important.svg)](DUAL_USE.md)
