@@ -1,0 +1,59 @@
+[package]
+name = "kms-api"
+authors.workspace = true
+publish.workspace = true
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[lib] # api proto for libp2p and grpc for KMS
+name = "kms_api"
+path = "src/lib.rs"
+crate-type = ["lib"]
+
+[dependencies]
+# ⚠️ IMPORTANT: Add new dependencies to workspace root Cargo.toml, NOT here!
+# Use .workspace = true to reference workspace dependencies
+# Maintain alphabetical order
+alloy-dyn-abi = { workspace = true }
+alloy-primitives = { workspace = true, features = ["k256"] }
+alloy-sol-types = { workspace = true, features = ["eip712-serde"] }
+anyhow.workspace = true
+cfg-if.workspace = true
+hex.workspace = true
+prost.workspace = true
+rand = { workspace = true, features = ["std", "std_rng"] }
+serde = { workspace = true, features = ["derive", "rc"] }
+strum.workspace = true
+strum_macros.workspace = true
+thiserror.workspace = true
+tonic = { workspace = true, optional = true }
+tfhe = { workspace = true, features = [
+    "boolean",
+    "shortint",
+    "integer",
+    "zk-pok",
+    "experimental-force_fft_algo_dif4",
+] }
+tfhe-versionable.workspace = true
+threshold-fhe = { workspace = true, default-features = false, features = [
+    "extension_degree_4",
+] }
+tracing = { workspace = true, features = ["log"] }
+wasm-bindgen.workspace = true
+
+[dev-dependencies]
+tracing-test = { workspace = true}
+
+[build-dependencies]
+tonic-build.workspace = true
+
+[package.metadata.cargo-machete]
+ignored = ["prost", "wasm-bindgen"]
+
+[features]
+default = []
+non-wasm = ["dep:tonic"]
+insecure = []

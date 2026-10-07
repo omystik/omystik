@@ -1,0 +1,39 @@
+[package]
+name = "libp2p_common"
+version.workspace = true
+authors.workspace = true
+description = "libp2p for FHE p2p mesh"
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+dashmap.workspace = true
+hex = "0.4.3"
+prost.workspace = true
+serde.workspace = true
+tokio.workspace = true
+tokio-stream.workspace = true
+tokio-util.workspace = true
+tonic.workspace = true
+clap.workspace = true
+futures.workspace = true
+libp2p.workspace = true
+rand.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+blake3 = "1.5.5"
+libp2p-stream = "0.2.0-alpha"
+
+content-hashing = { path = "../content-hashing" }
+db-access = { path = "../db-access" }
+mesh_gateway_wire = { path = "../mesh_gateway_wire" }
+meshes_config = { path = "../meshes_config" }
+
+[build-dependencies]
+prost-build.workspace = true
+tonic-build.workspace = true

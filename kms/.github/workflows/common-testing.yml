@@ -1,0 +1,406 @@
+name: common-testing
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        required: true
+      build-publish-docs:
+        type: boolean
+        required: false
+        default: false
+      runs-on:
+        type: string
+        required: false
+        default: 'ubuntu-latest'
+      args-tests:
+        type: string
+        required: false
+        default: ''
+      run-minio:
+        type: boolean
+        required: false
+        default: false
+      run-redis:
+        type: boolean
+        required: false
+        default: false
+      run-wasm:
+        type: boolean
+        required: false
+        default: false
+      wasm-test-feature:
+        type: string
+        required: false
+        default: '-F wasm_tests'
+      package-name:
+        type: string
+        required: true
+      test-coverage:
+        type: boolean
+        required: false
+        default: false
+      test-minimum-coverage:
+        type: string
+        required: false
+        default: 0
+      npm-release:
+        type: boolean
+        required: false
+        default: false
+      app-cache-dir:
+        type: string
+        required: true
+      nextest-test-threads:
+        type: string
+        required: false
+        default: '1'
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+      GHCR_READ_TOKEN:
+        required: true
+      BLOCKCHAIN_ACTIONS_TOKEN:
+        required: true
+      NPM_TOKEN:
+        required: false
+      AWS_ACCESS_KEY_S3_USER:
+        required: true
+      AWS_SECRET_KEY_S3_USER:
+        required: true
+      SLACK_CHANNEL:
+        required: true
+      BOT_USERNAME:
+        required: true
+      SLACK_WEBHOOK:
+        required: true
+      CGR_USERNAME:
+        required: true
+      CGR_PASSWORD:
+        required: true
+
+env:
+  CARGO_TERM_COLOR: always
+  DOCKER_BUILD_TEST_CORE_CLIENT: 1
+  CARGO_INCREMENTAL: 0
+  DOCKER_BUILDKIT: 1
+  NPM_TAG: ''
+
+# No top-level permissions needed - job-level permissions are more specific
+permissions: {}
+
+jobs:
+  compile-rust-unit-tests:
+    name: common-testing/compile-rust-unit-tests
+    permissions:
+      checks: write # Required to create GitHub checks for test results
+      packages: read # Required to read GitHub packages/container registry
+      issues: write # Required to create comments on issues
+      pull-requests: write # Required to create comments on pull requests
+      actions: read # Required to read workflow run information and download artifacts
+      contents: read # Required to checkout repository code
+    timeout-minutes: 500
+    runs-on: ${{ inputs.runs-on }}
+    services:
+      redis:
+        image: ${{ inputs.run-redis && 'redis/redis-stack:7.4.0-v3@sha256:c2019e98fd5abce4dd11feec004de44d1709d2366a6efa5ffb2bd0daf8f9c6a4' || '' }}
+        ports:
+          - 6379:6379
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          submodules: true
+          token: ${{ secrets.BLOCKCHAIN_ACTIONS_TOKEN }}
+          persist-credentials: true
+
+      - name: Get Rust version
+        env:
+          GH_WORKSPACE: ${{ github.workspace }}
+        run: |
+          version="$(cat "$GH_WORKSPACE/toolchain.txt")"
+          echo "RUST_IMAGE_VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Setup Home
+        if: "${{ !contains(inputs.runs-on, 'ubuntu') }}"
+        run: echo "HOME=/home/ubuntu" >> "${GITHUB_ENV}"
+
+      # LFS files are needed for backward compatibility tests
+      # Install git LFS before checkout does not seem possible on our self-hosted runners, so we
+      # need to do it right after and then manually pull LFS files
+      - name: setup gitlfs from binary
+        env:
+          GIT_LFS_VERSION: '3.6.1'
+        run: |
+          wget "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-amd64-v${GIT_LFS_VERSION}.tar.gz"
+          tar -xzf "git-lfs-linux-amd64-v${GIT_LFS_VERSION}.tar.gz"
+          "./git-lfs-${GIT_LFS_VERSION}/install.sh"
+          git lfs pull
+
+      # Needed to be able to pull some docker images for the simulator test
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: cgr.dev
+          username: ${{ secrets.CGR_USERNAME }}
+          password: ${{ secrets.CGR_PASSWORD }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_S3_USER }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_S3_USER }}
+          aws-region: eu-west-3
+
+      ############################################################################
+      # Initialize Docker Buildx for multi-platform builds.
+      - name: Set up Docker Buildx
+        if: inputs.package-name == 'simulator'
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
+        with:
+          platforms: linux/amd64,linux/arm64
+          buildkitd-flags: --debug
+
+      ############################################################################
+      # Rust toolchain setup
+      #
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c # v1.15.2
+        with:
+          toolchain: ${{ env.RUST_IMAGE_VERSION }}
+          components: rustfmt, clippy, llvm-tools-preview, llvm-tools
+          cache: false
+
+      - name: Install nextest and grcov
+        run: |
+          cargo install cargo-nextest --locked
+          cargo install grcov --locked
+
+      ############################################################################
+      # Setup cache for dockerfile and inject in docker
+      #
+      - name: Setup Cache
+        uses: runs-on/cache@a10d0f887093e2bc9de875be9edf8ab98c94a154 # v4.3.0
+        id: cache
+        env:
+          RUNS_ON_S3_BUCKET_CACHE: gh-actions-cache-eu-west-3
+          RUNS_ON_AWS_REGION: eu-west-3
+        with:
+          path: |
+            /home/ubuntu/.cargo/bin/
+            /home/ubuntu/.cargo/registry/index/
+            /home/ubuntu/.cargo/registry/cache/
+            /home/ubuntu/.cargo/git/db/
+            ${{ github.workspace }}/target
+          key: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b # v3.0.0
+        with:
+          version: '26.x'
+          repo-token: ${{ secrets.GITHUB_TOKEN }} # Add github token to avoid rate limit see docs https://github.com/arduino/setup-protoc
+
+      - name: Setup usage of private repo
+        env:
+          BLOCKCHAIN_ACTIONS_TOKEN: ${{ secrets.BLOCKCHAIN_ACTIONS_TOKEN }}
+        run: git config --global url."https://${BLOCKCHAIN_ACTIONS_TOKEN}@github.com".insteadOf ssh://git@github.com
+
+      - name: Setup minio
+        if: ${{ inputs.run-minio }}
+        env:
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+        run: |
+          docker run -d -p 9000:9000 --name minio \
+                     -e "MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}" \
+                     -e "MINIO_SECRET_KEY=${MINIO_SECRET_KEY}" \
+                     -v /tmp/data:/data \
+                     -v /tmp/config:/root/.minio \
+                     minio/minio server /data
+
+      - name: Setup Minio bucket
+        if: ${{ inputs.run-minio }}
+        env:
+          MINIO_ALIAS: testminio
+          MINIO_BUCKET: ci-kms-key-test
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+          MINIO_REGION: eu-north-1
+        run: |
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc \
+            --create-dirs \
+            -o "${HOME}"/minio-binaries/mc
+
+          chmod +x "${HOME}"/minio-binaries/mc
+          export PATH="${PATH}:${HOME}/minio-binaries/"
+
+          mc alias set "${MINIO_ALIAS}" http://127.0.0.1:9000 "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}"
+          mc mb "${MINIO_ALIAS}"/"${MINIO_BUCKET}"
+          mc anonymous set public "${MINIO_ALIAS}"/"${MINIO_BUCKET}"
+
+      - name: Setup cargo dylint
+        run: |
+          cargo install cargo-dylint dylint-link --force
+
+      - name: clippy and rustfmt versions
+        run: |
+          cargo clippy -V && cargo fmt --version
+
+      - name: Formatting
+        run: cargo fmt --all -- --check
+
+      - name: Linting default features
+        env:
+          PACKAGE_NAME: ${{inputs.package-name}}
+        run: cargo clippy --all-targets --package "${PACKAGE_NAME}" -- -D warnings
+
+      - name: Linting All features
+        env:
+          PACKAGE_NAME: ${{inputs.package-name}}
+        run: cargo clippy --all-targets --all-features --package "${PACKAGE_NAME}" -- -D warnings
+
+      - name: Linting dylint
+        run: cargo dylint --all
+
+      # Test execution
+      - name: Run Tests
+        id: tests
+        if: ${{ ! inputs.test-coverage || !contains(github.event.pull_request.labels.*.name, 'coverage') }}
+        env:
+          # some integration tests run docker compose
+          # which builds images which need git access
+          # building images in every integration test run is bad
+          #
+          # If we want to enable the coverage again we can use the snippets below:
+          # COVERAGE
+          # if [[ "${EVENT_NAME}" == 'schedule' ]]; then
+          #   export RUSTFLAGS="-Cinstrument-coverage"
+          #   export LLVM_PROFILE_FILE="cargo-test-%p-%m.profraw"
+          #   RUST_BACKTRACE=full cargo nextest run --profile ci ${ARGS_TESTS:+$ARGS_TESTS}
+          #   ~/.cargo/bin/grcov . --binary-path "${GITHUB_WORKSPACE}/target/debug/deps/" -s . --branch --ignore-not-existing -o "${RUNNER_TEMP}/lcov" -t lcov
+          # else
+          #   RUST_BACKTRACE=full cargo nextest run --profile ci --no-fail-fast ${ARGS_TESTS:+$ARGS_TESTS}
+          # fi
+          AWS_ACCESS_KEY_ID: 'minioadmin'
+          AWS_SECRET_ACCESS_KEY: 'minioadmin'
+          AWS_DEFAULT_REGION: 'eu-north-1'
+          AWS_ENDPOINT: 'http://127.0.0.1:9000'
+          BLOCKCHAIN_ACTIONS_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
+          ARGS_TESTS: ${{inputs.args-tests}}
+          NEXTEST_RETRIES: 3
+          NEXTEST_TEST_THREADS: ${{inputs.nextest-test-threads}}
+          EVENT_NAME: ${{ github.event_name }}
+          RUNNER_TEMP: ${{ runner.temp }}
+        run: |
+          mkdir -p ~/.aws/ &&
+          echo "[default]" > ~/.aws/credentials &&
+          echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials &&
+          echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials &&
+          cat ~/.aws/credentials &&
+          echo "[default]" > ~/.aws/config &&
+          echo "output=json" >> ~/.aws/config &&
+          echo "region=${AWS_DEFAULT_REGION}" >> ~/.aws/config &&
+          echo "endpoint_url=${AWS_ENDPOINT}" >> ~/.aws/config &&
+          cat ~/.aws/config &&
+          RUST_BACKTRACE=full cargo nextest run --profile ci --no-fail-fast ${ARGS_TESTS:+$ARGS_TESTS}
+
+      - name: Copy Test Results
+        if: (!cancelled() || !failure() && github.event_name == 'pull_request')
+        run: |
+          if find "${GITHUB_WORKSPACE}"/target/nextest/ci -mindepth 1 -type f -print -quit 2>/dev/null | grep -q .; then
+            echo "Files found in ${GITHUB_WORKSPACE}/target/nextest/ci"
+            ls -R "${GITHUB_WORKSPACE}"/target/nextest/ci
+            echo "TIMESTAMP=$(date +"%Y%m%d%H%M%S")" >> "$GITHUB_ENV"
+            cp -Lpr "${GITHUB_WORKSPACE}"/target/nextest/ci/junit.xml /tmp/junit.xml # zizmor: ignore[template-injection]
+            echo "EXIT_CODE=0" >> "$GITHUB_ENV"
+          else
+            echo "No junit test files found in ${GITHUB_WORKSPACE}/target/nextest/ci"
+            echo "EXIT_CODE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+        shell: bash
+
+      - name: Upload Test Results
+        if: ((!cancelled() || !failure() && github.event_name == 'pull_request') && env.EXIT_CODE == 0)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: junit-test-report-${{ env.TIMESTAMP }}
+          path: /tmp/junit.xml
+
+      # COVERAGE
+      # - name: Upload coverage to Codecov
+      #   if: github.event_name == 'schedule'
+      #   uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7  # v5.5.1
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+      #     files: '${{ runner.temp }}/lcov'
+      #     fail_ci_if_error: true
+
+      - name: Set Slack color
+        id: slack_color
+        env:
+          JOB_RESULT: ${{ steps.tests.outcome }}
+        run: |
+          if [ "${JOB_RESULT}" = "success" ]; then
+            echo "color=good" >> "$GITHUB_OUTPUT"
+          else
+            echo "color=danger" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post nightly tests results in a channel
+        if: always() && github.event_name == 'schedule'
+        uses: rtCamp/action-slack-notify@e31e87e03dd19038e411e38ae27cbad084a90661 # v2.3.3
+        env:
+          ACTION_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_USERNAME: ${{ secrets.BOT_USERNAME }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON_EMOJI: ':github-octocat:'
+          SLACK_TITLE: 'Nightly Tests Result'
+          SLACK_COLOR: ${{ steps.slack_color.outputs.color }}
+          SLACK_MESSAGE: "${{ steps.tests.outcome }} \nFor args: ${{ inputs.args-tests }}"
+
+      - name: Generate unique ID
+        id: unique-id
+        run: echo "id=$(date "+%s%N" | md5sum | head -c 8)" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Archive integration test trace logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: logs-${{ inputs.package-name }}-${{ github.workflow }}-${{ github.run_number }}-${{ github.job }}-${{ steps.unique-id.outputs.id }}
+          path: '**/*.log'
+          retention-days: 30
+          if-no-files-found: ignore
+
+      # Documentation
+      - name: Build Documentation
+        if: ${{ inputs.build-publish-docs }}
+        run: cargo doc --no-deps
+
+      - name: Deploy to GitHub Pages
+        if: ${{ inputs.build-publish-docs }}
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
+          destination_dir: ${{ inputs.working-directory }}
+
+      - name: Remove aws credentials file
+        run: |
+          rm -rf ~/.aws

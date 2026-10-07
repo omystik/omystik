@@ -1,0 +1,66 @@
+[[gateway]]
+gateway_id = 1
+[gateway.face_a]
+secret_seed = 11
+peer_id  = "12D3KooWHbEputWi1fJAxoYgmvvDe3yP7acTACqmXKGYwMgN2daQ"
+listen_address = "/ip4/0.0.0.0/udp/2100/quic-v1"
+data_dir = "./data/gateway"
+
+[gateway.face_b]
+secret_seed = 21
+peer_id  = "12D3KooWE1hRi1pECQ6bfxmeybMFEtYcTjJuhjxc75dZZLXwrdwy"
+listen_address = "/ip4/0.0.0.0/udp/3100/quic-v1"
+num_majority = 2
+num_reconstruct = 3
+expect_all_responses = true
+
+[[gateway]]
+gateway_id = 2
+[gateway.face_a]
+secret_seed = 12
+peer_id  = "12D3KooWCxnyz1JxC9y1RniRQVFe2cLaLHsYNc2SnXbM7yq5JBbJ"
+listen_address = "/ip4/0.0.0.0/udp/2200/quic-v1"
+data_dir = "./data/gateway"
+
+[gateway.face_b]
+secret_seed = 22
+peer_id  = "12D3KooWCxkD42pVy9VZXGPQgBmL2ekc9kxME5YwriN3xTN6aBMx"
+listen_address = "/ip4/0.0.0.0/udp/3200/quic-v1"
+num_majority = 2
+num_reconstruct = 3
+expect_all_responses = true
+
+[[gateway]]
+gateway_id = 3
+[gateway.face_a]
+secret_seed = 13
+peer_id  = "12D3KooWFNisMCMFB4sxKjQ4VLoTrMYh7fUJqXr1FMwhqAwfdxPS"
+listen_address = "/ip4/XXX.XXX.X.XXX/udp/2300/quic-v1"
+data_dir = "./data/gateway"
+
+[gateway.face_b]
+secret_seed = 23
+peer_id  = "12D3KooWFYZ24pnTgzhPJmznbMQTv8g9xdJANuM8wjkbCGrhWDvP"
+listen_address = "/ip4/XXX.XXX.X.XXX/udp/3300/quic-v1"
+num_majority = 2
+num_reconstruct = 3
+expect_all_responses = true
+
+[[gateway]]
+gateway_id = 4
+[gateway.face_a]
+secret_seed = 14
+peer_id  = "12D3KooW9ubkfzRCQrUvcgvSqL2Cpri5pPV9DuyoHptvshVcNE9h"
+listen_address = "/ip4/XXX.XXX.X.XXX/udp/2400/quic-v1"
+data_dir = "./data/gateway"
+
+[gateway.face_b]
+secret_seed = 24
+peer_id  = "12D3KooWSM6emJRiK1AzUG39eFW42k8AUKLCk3fTFLh7GU1hPMFs"
+listen_address = "/ip4/XXX.XXX.X.XXX/udp/3400/quic-v1"
+num_majority = 2
+num_reconstruct = 3
+expect_all_responses = true
+
+[[allow]]
+allow_peers  = [1, 2, 3, 4]

@@ -1,0 +1,69 @@
+name: helm-release
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  HELM_VERSION: v3.16.4
+
+permissions:
+  contents: read # Required to checkout repository code
+
+jobs:
+  helm-release:
+    name: helm-release/helm-release
+    permissions:
+      actions: read # Required to read workflow run information
+      contents: read # Required to checkout repository code
+      id-token: write # Required for OIDC authentication
+      packages: write # Required to publish Helm charts to GitHub packages
+    runs-on: ubuntu-latest
+    environment: main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 #v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814 #v4.2.0
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
+        env:
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CR_SKIP_EXISTING: true
+          CR_SKIP_UPLOAD: true
+          CR_GENERATE_RELEASE_NOTES: true
+        # Needed as skip_upload will properly work only on future version of helm/chart-releaser-action
+        continue-on-error: true
+        with:
+          charts_dir: charts
+
+      - name: Push Charts to GHCR
+        if: ${{ always() }}
+        env:
+          OCI_REGISTRY: 'oci://ghcr.io/${{ github.repository }}/charts'
+        run: |
+          for pkg in .cr-release-packages/*; do
+            if [ -z "${pkg:-}" ]; then
+              break
+            fi
+            helm push "${pkg}" "${OCI_REGISTRY}"
+          done

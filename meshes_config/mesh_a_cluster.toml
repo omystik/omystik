@@ -1,0 +1,29 @@
+[[syndesmos]]
+syndesmos_id = 1
+secret_seed = 218
+peer_id  = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+listen_addr = "/ip4/XXX.XXX.X.XXX/udp/9008/quic-v1" # meshes_config/src/gateway_config.rs must be adapted too
+namespace_mesh_a = "/mesh-a"
+
+[[syndesmos]]
+syndesmos_id = 2
+secret_seed = 69
+peer_id  = "12D3KooWMzg8FK5YW9SSov78gYudoeJxsWy4GbjMg7fA6JKv2X8T"
+listen_addr = "/ip4/XXX.XXX.X.XX/udp/9002/quic-v1"
+namespace_mesh_a = "/mesh-a"
+
+[[autonomos]]
+autonomos_id = 1
+syndesmos_peer = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+syndesmos_addr = "/ip4/XXX.XXX.X.XXX/udp/9008/quic-v1"
+namespace_mesh_a = "/mesh-a"
+
+[[autonomos]]
+autonomos_id = 2
+syndesmos_peer = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+syndesmos_addr = "/ip4/XXX.XXX.X.XXX/udp/9008/quic-v1" 
+namespace_mesh_a = "/mesh-a"
+
+[[autonomos]]
+autonomos_id = 3
+namespace_mesh_a = "/mesh-a"

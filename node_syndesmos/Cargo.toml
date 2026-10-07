@@ -1,0 +1,28 @@
+[package]
+name = "node_syndesmos"
+version.workspace = true
+authors.workspace = true
+description = "bootstrap node in FHE p2p mesh"
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+edition.workspace = true
+resolver = "2"
+
+[dependencies]
+anyhow = { workspace = true }
+blake3 = "1.5.5"
+clap = { version = "4.5.6", features = ["derive"] }
+futures = "0.3.31"
+libp2p = { version = "0.54.1", features = [ "tokio", "cbor", "dns", "identify", "kad", "noise", "relay", "rendezvous", "ping", "macros", "request-response", "tcp", "quic", "websocket", "yamux"] }
+libp2p-stream = "0.2.0-alpha"
+rand = "0.8.5"
+serde = { version = "1.0.217", features = ["derive"] }
+tokio = { version = "1.42.0", features = ["full"] }
+tokio-util = {version = "0.7.13", features = ["compat"] }
+toml = "0.9.8"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+content-hashing = { path = "../content-hashing" }
+persistency_utils = { path = "../persistency_utils" }
+libp2p_common = { path = "../libp2p_common" }

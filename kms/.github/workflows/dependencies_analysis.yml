@@ -1,0 +1,52 @@
+name: dependencies_analysis
+
+on:
+  push:
+    branches:
+      - main
+      - test
+
+  pull_request:
+    branches: ['*']
+
+concurrency:
+  group: deps-analysis-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read # Required to checkout repository code
+
+jobs:
+  dependencies-check:
+    name: dependencies_analysis/dependencies-check (bpr)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Rust setup
+        uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c # v1.15.2
+        with:
+          toolchain: stable
+          cache: false
+
+      # to calculate hash use `curl -s https://api.github.com/repos/cargo-bins/cargo-binstall/git/refs/tags/v1.10.14 | jq -r .object.sha`
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@84ca29d5c1719e79e23b6af147555a8f4dac79d6 # v1.10.14
+
+      # Use cargo-binstall to efficiently install required cargo tools with versiones specified
+      - name: Install cargo tools
+        run: |
+          cargo binstall --no-confirm --force \
+            cargo-audit@0.21.0 \
+            cargo-deny@0.16.2
+
+      - name: Check that Cargo.lock is the source of truth
+        run: cargo update -w --locked
+
+      - name: License whitelist
+        run: cargo-deny deny check license --deny license-not-encountered
+
+      - name: Security issue whitelist
+        run: cargo-audit audit

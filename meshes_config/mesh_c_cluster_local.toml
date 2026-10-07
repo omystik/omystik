@@ -1,0 +1,17 @@
+[[ypolo]]
+ypolo_id = 1
+secret_seed = 5
+peer_id = "12D3KooWSHj3RRbBjD15g6wekV8y3mm57Pobmps2g2WJm6F67Lay"
+listen_address = "/ip4/127.0.0.1/udp/4000/quic-v1"
+syndesmos_peer_id = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+syndesmos_address = "/ip4/127.0.0.1/udp/9008/quic-v1"
+namespace = "/mesh-c"
+
+[[ypolo]]
+ypolo_id = 2
+secret_seed = 10
+peer_id = "12D3KooWFHNBwTxUgeHRcD3g4ieiXBmZGVyp6TKGWRKKEqYgCC1C"
+listen_address = "/ip4/127.0.0.1/udp/4001/quic-v1"
+syndesmos_peer_id = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+syndesmos_address = "/ip4/127.0.0.1/udp/9002/quic-v1" 
+namespace = "/mesh-c"

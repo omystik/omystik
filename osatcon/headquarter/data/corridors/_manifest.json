@@ -1,0 +1,13 @@
+[
+  {
+    "id": "2bdd6afdeb",
+    "name": "Hormuz Strait",
+    "bbox": [
+      25.35,
+      55.9,
+      26.95,
+      57.35
+    ],
+    "graph": "2bdd6afdeb.road_graph.json"
+  }
+]

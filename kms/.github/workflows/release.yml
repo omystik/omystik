@@ -1,0 +1,46 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        type: string
+        description: 'Branch, tag or SHA to generate the release from. (Default main)'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: read # Required to checkout repository code
+
+jobs:
+  release:
+    name: release/release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.sem-release.outputs.new_release_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.ref }}
+
+      - name: Semantic Release
+        id: sem-release
+        uses: cycjimmy/semantic-release-action@b1b432f13acb7768e0c8efdec416d363a57546f2 # v4.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_ACTIONS_TOKEN }}
+
+  cargo-versions:
+    name: release/cargo-versions
+    uses: ./.github/workflows/common-release-workspace-cargo.yml
+    needs:
+      - release
+    permissions:
+      contents: write # Required to create releases and tags
+      id-token: write # Required for OIDC authentication
+      packages: write # Required to publish packages
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets:
+      BLOCKCHAIN_ACTIONS_TOKEN: ${{ secrets.BLOCKCHAIN_ACTIONS_TOKEN }}

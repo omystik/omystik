@@ -1,0 +1,42 @@
+[package]
+name = "node_kentr"
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+publish.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "node_kentr"
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+alloy-primitives = "=1.4.1"  # Ethereum primitives
+aes-prng = "0.2.1"
+hex = { workspace = true }
+kms-api = { path = "../kms/core/api" }
+kms-core-client = { path = "../kms/core-client" }
+kms = { path = "../kms/core/service" }
+serde = { version = "1.0.217", features = ["derive"] }
+tokio = { version = "1.42.0", features = ["full"] }
+tokio-stream = "0.1.17"
+tokio-util = {version = "0.7.13", features = ["compat"] }
+clap = { version = "4.5.6", features = ["derive"] }
+futures = "0.3.31"
+libp2p = { version = "0.54.1", features = [ "tokio", "cbor", "dns", "identify", "kad", "noise", "relay", "rendezvous", "ping", "macros", "request-response", "tcp", "quic", "websocket", "yamux"] }
+libp2p-stream = "0.2.0-alpha"
+rand = "0.8.5"
+tfhe = "=1.4.0-alpha.3"  # Fully Homomorphic Encryption library - LOW RISK: Zama
+toml = "0.9.8"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+validator.workspace = true
+content-hashing = { path = "../content-hashing" }
+mesh_gateway_wire = { path = "../mesh_gateway_wire" }
+threshold-fhe = { path = "../kms/core/threshold" }
+libp2p_common = { path = "../libp2p_common" }
+observability = { path = "../kms/observability" }
+plegma-fhe-pelatis = { path = "../plegma-fhe-pelatis" }

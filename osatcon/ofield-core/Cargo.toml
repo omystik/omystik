@@ -1,0 +1,21 @@
+[package]
+name = "ofield-core"
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+publish.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+blake3 = "1.5.5"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+hex = "0.4.3"
+rand = { version = "0.8", default-features = false, features = ["std", "small_rng"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+sgp4 = "2.3"
+tfhe = { version = "=1.4.0-alpha.3", features = ["software-prng"] }  # Fully Homomorphic Encryption library - LOW RISK: Zama

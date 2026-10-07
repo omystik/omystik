@@ -1,0 +1,26 @@
+[package]
+name = "compute-client"
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+publish.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true, optional = true }
+compute-abi = { path = "../compute-abi" }
+futures = { workspace = true }
+hex = { workspace = true }
+libp2p = { workspace = true }
+libp2p_common = { path = "../libp2p_common" }
+mesh_gateway_wire = { path = "../mesh_gateway_wire" }
+serde = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+[features]
+default = []
+cli = ["clap"]

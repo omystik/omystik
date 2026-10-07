@@ -1,0 +1,17 @@
+[package]
+name = "kms-libp2p"
+authors.workspace = true
+publish.workspace = true
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[lib] # Libp2p request/response for KMS
+name = "kms_libp2p"
+path = "src/lib.rs"
+crate-type = ["lib"]
+
+[dependencies]
+kms_api = { package = "kms-api", path = "../api", default-features = false}

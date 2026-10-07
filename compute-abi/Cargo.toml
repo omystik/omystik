@@ -1,0 +1,12 @@
+[package]
+name = "compute-abi"
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+publish.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true

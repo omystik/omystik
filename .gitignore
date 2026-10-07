@@ -1,0 +1,75 @@
+/target
+/target-pi
+
+metadata-nodeps.json
+
+# folder
+/content_test
+*/data/*
+data/content/*
+data/metadata/*
+data/metadata/midcid/*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*db.sqlite
+
+node_modules
+dist
+dist-ssr
+*.local
+
+.DS_Store
+yarn.lock
+
+# adding confidential
+node_kryphos/keys/*
+node_kryphos/certs/*
+node_kryphos/backup_vault/*
+
+node_kentr/data/blob/acks/*
+node_kentr/data/blob/artifact_aliases/*
+node_kentr/data/blob/artifact_manifests/*
+node_kentr/data/blob/blobs/*
+node_kentr/data/blob/jobs/*
+node_kentr/data/blob/program_refs/*
+node_kentr/data/blob/programs/*
+node_kentr/data/blob/pubkeys/*
+node_kentr/data/content/*
+node_kentr/data/core/keys/*
+node_kentr/keys/*
+node_kentr/logs/*
+
+# meshes config
+
+# osatcon case data
+osatcon/*/data/core/keys/
+osatcon/edge-convoy-operator/data/corridors_raw_osm
+osatcon/edge-satellite-operator/assets
+osatcon/edge-convoy-operator/data/private_stations.json
+osatcon/headquarter/assets/GRAY_LR_SR_OB_DR.tif
+osatcon/headquarter/keys/
+osatcon/edge-satellite-operator/data/ui/earth.tiff
+
+# corridors: ship only the Hormuz Strait graph and the manifest.
+# The contents are excluded rather than the directory itself, because git
+# cannot re-include a file that sits inside an excluded directory.
+osatcon/edge-convoy-operator/data/corridors/*
+!osatcon/edge-convoy-operator/data/corridors/_manifest.json
+!osatcon/edge-convoy-operator/data/corridors/2bdd6afdeb.road_graph.json
+osatcon/headquarter/data/corridors/*
+!osatcon/headquarter/data/corridors/_manifest.json
+!osatcon/headquarter/data/corridors/2bdd6afdeb.road_graph.json
+
+# generated cargo metadata export
+metadata.json
+
+# Git LFS fixtures we cannot upload (pointers only, see kms/UPSTREAM.md)
+kms/backward-compatibility/
+

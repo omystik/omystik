@@ -1,0 +1,57 @@
+# Lint and check CI
+name: ci_lint
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-lint-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+# Top-level permissions for workflow-level operations
+permissions:
+  # Required to checkout repository code
+  contents: read # Required to checkout repository code
+  actions: read # Required to read workflow run information
+
+env:
+  ACTIONLINT_VERSION: 1.6.27
+
+jobs:
+  lint-check:
+    name: ci_lint/lint-check (bpr)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: actionlint
+        uses: raven-actions/actionlint@3a24062651993d40fed1019b58ac6fbdfbf276cc # v2.0.1
+
+      - name: Ensure SHA pinned actions
+        uses: zgosalvez/github-actions-ensure-sha-pinned-actions@9e9574ef04ea69da568d6249bd69539ccc704e74 # v4.0.0
+        with:
+          allowlist: |
+            slsa-framework/slsa-github-generator
+
+  sast-check:
+    name: ci_lint/sast-check (bpr)
+    # job permissions
+    permissions:
+      security-events: write # Required to write security events for SAST results
+      actions: read # Required to read workflow run information
+      contents: read # Required to checkout repository code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@e673c3917a1aef3c65c972347ed84ccd013ecda4 # v0.2.0
+        with:
+          persona: pedantic
+          version: 1.15.2

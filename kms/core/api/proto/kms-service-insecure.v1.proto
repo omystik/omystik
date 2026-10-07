@@ -1,0 +1,69 @@
+syntax = "proto3";
+package kms_service.v1;
+
+import "kms.v1.proto";
+
+// WARNING: This service is insecure and should not be used in production.
+//
+// Since this is the insecure endpoint, we do not duplicate
+// the documentation. Please see the documentation of the secure endpoint.
+// All insecure RPCs (i.e., the ones that have `Insecure` in the prefix)
+// have the same semantics as the secure ones.
+service CoreServiceEndpoint {
+  rpc Init(kms.v1.InitRequest) returns (kms.v1.Empty);
+
+  rpc KeyGenPreproc(kms.v1.KeyGenPreprocRequest) returns (kms.v1.Empty);
+
+  rpc GetKeyGenPreprocResult(kms.v1.RequestId) returns (kms.v1.KeyGenPreprocResult);
+
+  rpc KeyGen(kms.v1.KeyGenRequest) returns (kms.v1.Empty);
+
+  rpc GetKeyGenResult(kms.v1.RequestId) returns (kms.v1.KeyGenResult);
+
+  rpc InsecureKeyGen(kms.v1.KeyGenRequest) returns (kms.v1.Empty);
+
+  rpc GetInsecureKeyGenResult(kms.v1.RequestId) returns (kms.v1.KeyGenResult);
+
+  rpc PublicDecrypt(kms.v1.PublicDecryptionRequest) returns (kms.v1.Empty);
+
+  rpc GetPublicDecryptionResult(kms.v1.RequestId) returns (kms.v1.PublicDecryptionResponse);
+
+  rpc UserDecrypt(kms.v1.UserDecryptionRequest) returns (kms.v1.Empty);
+
+  rpc GetUserDecryptionResult(kms.v1.RequestId) returns (kms.v1.UserDecryptionResponse);
+
+  rpc CrsGen(kms.v1.CrsGenRequest) returns (kms.v1.Empty);
+
+  rpc GetCrsGenResult(kms.v1.RequestId) returns (kms.v1.CrsGenResult);
+
+  rpc InsecureCrsGen(kms.v1.CrsGenRequest) returns (kms.v1.Empty);
+
+  rpc GetInsecureCrsGenResult(kms.v1.RequestId) returns (kms.v1.CrsGenResult);
+
+  rpc NewKmsContext(kms.v1.NewKmsContextRequest) returns (kms.v1.Empty);
+
+  rpc DestroyKmsContext(kms.v1.DestroyKmsContextRequest) returns (kms.v1.Empty);
+
+  rpc InitiateResharing(kms.v1.InitiateResharingRequest) returns (kms.v1.InitiateResharingResponse);
+
+  rpc GetResharingResult(kms.v1.RequestId) returns (kms.v1.ResharingResultResponse);
+
+  rpc NewCustodianContext(kms.v1.NewCustodianContextRequest) returns (kms.v1.Empty);
+
+  rpc DestroyCustodianContext(kms.v1.DestroyCustodianContextRequest) returns (kms.v1.Empty);
+
+  rpc GetOperatorPublicKey(kms.v1.Empty) returns (kms.v1.OperatorPublicKey);
+
+  // Restore the contents of the KMS private storage from the backup vault.
+  rpc RestoreFromBackup(kms.v1.Empty) returns (kms.v1.Empty);
+
+  // Initialize custodian-based recovery by making a backup recovery request towards the custodians
+  rpc CustodianRecoveryInit(kms.v1.CustodianRecoveryInitRequest) returns (kms.v1.RecoveryRequest);
+
+  // Recover the master decryption key secret shared with custodians as part of a custodian-based backup recovery
+  rpc CustodianBackupRecovery(kms.v1.CustodianRecoveryRequest) returns (kms.v1.Empty);
+
+  rpc GetKeyMaterialAvailability(kms.v1.Empty) returns (kms.v1.KeyMaterialAvailabilityResponse);
+
+  rpc GetHealthStatus(kms.v1.Empty) returns (kms.v1.HealthStatusResponse);
+}

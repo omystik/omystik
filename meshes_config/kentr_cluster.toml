@@ -1,0 +1,19 @@
+[[kentr]]
+kentr_id = 1
+secret_seed = 4
+listen_address = "/ip4/XXX.XXX.X.XX/udp/3000/quic-v1"
+node_type = "Kentr"
+node_role = "Admin"
+syndesmos_peer_id_1 = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+syndesmos_address = "/ip4/XXX.XXX.X.XXX/udp/9008/quic-v1"
+namespace = "/mesh-a"
+
+[[kentr]]
+kentr_id = 2
+secret_seed = 9
+listen_address = "/ip4/XXX.XXX.X.XX/udp/3001/quic-v1"
+node_type = "Kentr"
+node_role = "NonAdmin"
+syndesmos_peer_id_1 = "12D3KooWLoUkbxkEzB7GNZVrAWKHLKPKQ9HLvEdkZwBieQuCcuhZ"
+syndesmos_address = "/ip4/XXX.XXX.X.XXX/udp/9008/quic-v1" 
+namespace = "/mesh-a"

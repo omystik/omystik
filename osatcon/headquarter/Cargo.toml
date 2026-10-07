@@ -1,0 +1,33 @@
+[package]
+name = "headquarter"
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+publish.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = "1.0.98"
+blake3 = "1.5.5"
+clap = { version = "4.5.6", features = ["derive"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+eframe = "0.33"
+egui = "0.33"
+hex = "0.4.3"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "tiff"] }
+serde = { workspace = true }
+tokio = { version = "1.42.0", features = ["rt", "time"] }
+toml = "0.9.8"
+validator = { version = "=0.20.0", features = ["derive"] }  # Struct validation - HIGH RISK: Individual maintainer (Keats), less active maintenance
+
+kms-api = { path = "../../kms/core/api" }
+kms = { path = "../../kms/core/service" }
+kryptografia = { path = "../../kryptografia" }
+libp2p_common = { path = "../../libp2p_common" }
+mesh_gateway_wire = { path = "../../mesh_gateway_wire" }
+node_kentr = { path = "../../node_kentr" }
+ofield-core = { path = "../ofield-core" }
+plegma-fhe-pelatis = { path = "../../plegma-fhe-pelatis" }
+smart-program-alert = { path = "../smart-program-alert" }

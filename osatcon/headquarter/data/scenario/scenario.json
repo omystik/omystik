@@ -1,0 +1,14 @@
+{
+  "scenario_id": "osatcon-alert-session-v1",
+  "start_unix_ms": 1700000000000,
+  "tick_ms": 3000,
+  "alert_radius_km": 290.0,
+  "max_sats_scan": 10,
+  "projection_ref_lat_deg": 25.0,
+  "coord_scale_per_km": 1000.0,
+  "convoy_speed_kmh": 130.0,
+  "convoy_dt_s": 5,
+  "recompute_every_s": 10,
+  "exposure_horizon_min": 180,
+  "exposure_step_s": 10
+}

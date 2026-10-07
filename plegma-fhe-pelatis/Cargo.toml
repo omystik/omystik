@@ -1,0 +1,31 @@
+[package]
+name = "plegma-fhe-pelatis"
+version.workspace = true
+authors.workspace = true
+description = "mesh client for ZAMA KMS"
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+edition.workspace = true
+resolver = "2"
+
+[dependencies]
+anyhow = { workspace = true }
+aes-prng = "0.2.1"
+alloy-primitives = "=1.4.1"  # Ethereum primitives
+alloy-sol-types = "=1.4.1"  # Solidity types & EIP-712
+hex = "=0.4.3"
+libp2p = { version = "0.54.1", features = [ "tokio", "cbor", "dns", "kad", "noise", "ping", "macros", "request-response", "tcp", "quic", "websocket", "yamux"] }
+prost = "0.13.5"
+rand = "0.8.5"
+serde = { version = "1.0.217", features = ["derive"] }
+tfhe = { version = "=1.4.0-alpha.3", features = ["software-prng"] }
+tokio = { version = "1.42.0", features = ["full"] }
+
+kms = { path = "../kms/core/service", default-features = false}
+kms-api = { path = "../kms/core/api", default-features = false }
+kms-core-client = { path = "../kms/core-client" }
+observability = { path = "../kms/observability" }
+threshold-fhe = { path = "../kms/core/threshold" }
+libp2p_common = { path = "../libp2p_common" }
+mesh_gateway_wire = { path = "../mesh_gateway_wire" }

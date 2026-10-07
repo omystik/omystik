@@ -1,0 +1,19 @@
+[package]
+name = "kryptografia"
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+publish.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+kms_api = { package = "kms-api", path = "../kms/core/api", default-features = false }
+tfhe = { version = "=1.4.0-alpha.3", features = ["software-prng"] }  # Fully Homomorphic Encryption library - LOW RISK: Zama
+tokio = { version = "1.42.0", features = ["full"] }
+tokio-stream = "0.1.17"
+tokio-util = {version = "0.7.13", features = ["compat"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }

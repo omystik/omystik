@@ -1,0 +1,50 @@
+name: common-release-workspace-cargo
+
+on:
+  workflow_call:
+    secrets:
+      BLOCKCHAIN_ACTIONS_TOKEN:
+        required: true
+    inputs:
+      version:
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  cargo-workspaces-release:
+    name: common-release-workspace-cargo/cargo-workspaces-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.BLOCKCHAIN_ACTIONS_TOKEN }}
+          persist-credentials: false
+
+      - name: Force git update
+        run: |
+          git checkout main
+          git fetch origin
+          git merge origin/main
+
+      - name: Install semantic-release-cargo
+        uses: taiki-e/install-action@678b06b887cdbf44fa0601e5915f865e17c2241d # v2.44.60
+        with:
+          tool: semantic-release-cargo@2.3.57 # Should not be updated without updating the Ubuntu version to a version using a newer glibc
+
+      - name: Prepare semantic-release for Rust
+        env:
+          VERSION: ${{ inputs.version }}
+        run: semantic-release-cargo prepare "${VERSION}"
+
+      - uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 #v5.0.1
+        env:
+          VERSION: ${{ inputs.version }}
+        with:
+          commit_message: 'chore: apply new version ${VERSION} to Cargo.toml files [ci skip]'
+          commit_user_name: zama-bot
+          commit_user_email: kms-infra@zama.ai
+          push_options: --force

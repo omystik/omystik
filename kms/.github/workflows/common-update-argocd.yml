@@ -1,0 +1,94 @@
+name: common-update-argocd
+
+on:
+  workflow_call:
+    inputs:
+      branch-name:
+        type: string
+        required: true
+      argocd-namespace:
+        type: string
+        required: true
+      argocd-app-name:
+        type: string
+        required: true
+      application-image:
+        type: string
+        required: true
+      enclave-deployment:
+        type: boolean
+        required: false
+        default: false
+      image-tag:
+        type: string
+        required: true
+      enclave-pcr0:
+        type: string
+        required: false
+      enclave-pcr1:
+        type: string
+        required: false
+      enclave-pcr2:
+        type: string
+        required: false
+    secrets:
+      ZWS_BOT_TOKEN:
+        required: true
+
+permissions: {}
+
+jobs:
+  update-argocd-image-tag:
+    name: common-update-argocd/update-argocd-image-tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: 'zama-zws/zws-gitops'
+          ref: ${{ inputs.branch-name }}
+          token: ${{ secrets.ZWS_BOT_TOKEN }}
+          persist-credentials: true
+
+      - name: Change image tag
+        uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
+        env:
+          ARGOCD_NAMESPACE: ${{ inputs.argocd-namespace }}
+          ARGOCD_APP_NAME: ${{ inputs.argocd-app-name }}
+          APPLICATION_IMAGE: ${{ inputs.application-image }}
+          DOCKER_TAG: ${{ inputs.image-tag }}
+        with:
+          cmd: |
+            pathEnv=".${APPLICATION_IMAGE}.image.tag"  valueEnv="${DOCKER_TAG}" yq -i 'eval(strenv(pathEnv)) = strenv(valueEnv)' ./values/${ARGOCD_NAMESPACE}/${ARGOCD_APP_NAME}/values-${ARGOCD_NAMESPACE}.yaml
+
+      - name: Add enclave deployment
+        if: ${{ inputs.enclave-deployment }}
+        uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
+        env:
+          ARGOCD_NAMESPACE: ${{ inputs.argocd-namespace }}
+          ARGOCD_APP_NAME: ${{ inputs.argocd-app-name }}
+          ENCLAVE_PCR0: ${{ inputs.enclave-pcr0 }}
+          ENCLAVE_PCR1: ${{ inputs.enclave-pcr1 }}
+          ENCLAVE_PCR2: ${{ inputs.enclave-pcr2 }}
+        with:
+          cmd: |
+            pathEnv=".kmsParties.awsKms.recipientAttestationImageSHA384"  valueEnv="${ENCLAVE_PCR0}" yq -i 'eval(strenv(pathEnv)) = strenv(valueEnv)' ./values/${ARGOCD_NAMESPACE}/tkms-infra/values.yaml
+            pathEnv=".kmsCore.thresholdMode.tls.trustedReleases[0].pcr0"  valueEnv="${ENCLAVE_PCR0}" yq -i 'eval(strenv(pathEnv)) = strenv(valueEnv)' ./values/${ARGOCD_NAMESPACE}/${ARGOCD_APP_NAME}/values-${ARGOCD_NAMESPACE}.yaml
+            pathEnv=".kmsCore.thresholdMode.tls.trustedReleases[0].pcr1"  valueEnv="${ENCLAVE_PCR1}" yq -i 'eval(strenv(pathEnv)) = strenv(valueEnv)' ./values/${ARGOCD_NAMESPACE}/${ARGOCD_APP_NAME}/values-${ARGOCD_NAMESPACE}.yaml
+            pathEnv=".kmsCore.thresholdMode.tls.trustedReleases[0].pcr2"  valueEnv="${ENCLAVE_PCR2}" yq -i 'eval(strenv(pathEnv)) = strenv(valueEnv)' ./values/${ARGOCD_NAMESPACE}/${ARGOCD_APP_NAME}/values-${ARGOCD_NAMESPACE}.yaml
+
+      - name: Commit and push to gitops repository
+        env:
+          APPLICATION_IMAGE: ${{ inputs.application-image }}
+          DOCKER_TAG: ${{ inputs.image-tag }}
+        run: |
+          git config user.name "zws-bot[bot]"
+          git config user.email "zws-bot[bot]@users.noreply.github.com"
+          if [ -z "$(git status -s)" ]; then
+            echo "No changes to commit"
+          else
+            git pull
+            git add .
+            git commit -m "chore: bump ${APPLICATION_IMAGE} image tag to ${DOCKER_TAG}"
+            git push
+          fi

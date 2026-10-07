@@ -1,0 +1,40 @@
+ØMYSTIK - sorties de reference
+Point 3 c) des elements techniques, decret n 2007-663
+
+Algorithme   : XChaCha20-Poly1305, chiffrement authentifie par flux
+Taille bloc  : 2 Mio
+Etiquette    : Poly1305, 16 octets par bloc
+Identifiant  : empreinte BLAKE3 du cryptogramme, extension .bin
+Clairs       : example_anssi/reference_sources/
+Cle (32 o)   : 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+
+Cas 1
+  description     : document PDF, un seul bloc
+  clair           : CyberDico_ANSSI.pdf
+  taille claire   : 449366 octets
+  blocs           : 1
+  nonce (19 o)    : a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b100
+  cryptogramme    : e3dae5fefdbd7c6cd4edbf791a3b645fd99971a0ee6d32fe6742a55fb3ff96e2.bin
+  taille chiffree : 449382 octets
+  surcout         : 16 octets, soit 1 x 16
+
+Cas 2
+  description     : image GIF animée, plusieurs blocs
+  clair           : odetector_debris_vrona.gif
+  taille claire   : 18238714 octets
+  blocs           : 9
+  nonce (19 o)    : a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b101
+  cryptogramme    : d1522d936ce9cb51f5a732799039db98580437d9d3bca6f813afff73968d7978.bin
+  taille chiffree : 18238858 octets
+  surcout         : 144 octets, soit 9 x 16
+
+Cas 3
+  description     : fichier vide, cas limite
+  clair           : clair_vide.bin
+  taille claire   : 0 octets
+  blocs           : 1
+  nonce (19 o)    : a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b102
+  cryptogramme    : 25e58f3a101b38ae416cb5563c9acc45068e521d9db10703e1678bd2dd7780e2.bin
+  taille chiffree : 16 octets
+  surcout         : 16 octets, soit 1 x 16
+

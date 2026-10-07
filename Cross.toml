@@ -1,0 +1,27 @@
+[target.aarch64-unknown-linux-gnu]
+pre-build = [
+    "dpkg --add-architecture arm64",
+    "apt-get update",
+    "apt-get install -y --no-install-recommends pkg-config cmake curl unzip ca-certificates",
+    "apt-get install -y --no-install-recommends libssl-dev:arm64 zlib1g-dev:arm64",
+    "apt-get install -y --no-install-recommends libx11-dev:arm64 libxrandr-dev:arm64 libxi-dev:arm64 libxcursor-dev:arm64 libxinerama-dev:arm64",
+    "apt-get install -y --no-install-recommends libxkbcommon-dev:arm64 libwayland-dev:arm64",
+    "apt-get install -y --no-install-recommends libasound2-dev:arm64 libudev-dev:arm64",
+    "apt-get install -y --no-install-recommends libgl1-mesa-dev:arm64 libegl1-mesa-dev:arm64",
+    "apt-get install -y --no-install-recommends libjpeg-dev:arm64 libpng-dev:arm64 libtiff-dev:arm64",
+    "curl -L -o /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v25.3/protoc-25.3-linux-x86_64.zip",
+    "unzip -o /tmp/protoc.zip -d /usr/local",
+    "chmod +x /usr/local/bin/protoc",
+    "protoc --version"
+]
+
+[target.x86_64-unknown-linux-gnu]
+pre-build = [
+    "apt-get update",
+    "apt-get install -y --no-install-recommends pkg-config cmake curl unzip ca-certificates",
+    "curl -L -o /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v25.3/protoc-25.3-linux-x86_64.zip",
+    "unzip -o /tmp/protoc.zip -d /usr/local",
+    "chmod +x /usr/local/bin/protoc",
+    "which protoc",
+    "protoc --version"
+]

@@ -1,0 +1,63 @@
+[package]
+name = "node_kryphos"
+version.workspace = true
+authors.workspace = true
+description = "libp2p transport for ZAMA KMS"
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+edition.workspace = true
+resolver = "2"
+
+[dependencies]
+anyhow = { workspace = true }
+async-trait = "0.1.88"
+alloy-signer = "=1.0.38"  # Ethereum signing abstraction - LOW RISK: Alloy/Paradigm team
+blake3 = "1.5.5"
+base64 = "0.13.1"
+dashmap = "6.1.0"
+hex = "=0.4.3"  # Hex encoding/decoding - HIGH RISK: Individual maintainer (KokaKiwi), despite 284M downloads
+futures-util = "0.3"
+k256 = "=0.13.4"  # secp256k1 elliptic curve - LOW RISK: RustCrypto org, 33M+ downloads
+kms = { path = "../kms/core/service"}
+bc2wrap = { path = "../kms/bc2wrap" }  # Internal bincode wrapper custom implementation
+kms_threshold = { package = "threshold-fhe", path = "../kms/core/threshold" }
+kms_api = { package = "kms-api", path = "../kms/core/api" }
+libp2p_common = { path = "../libp2p_common" }
+mesh_gateway_wire = { path = "../mesh_gateway_wire" }
+prost = "0.13.5"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.145"
+tokio = { version = "1.42.0", features = ["full"] }
+tokio-stream = "0.1.17"
+tokio-util = {version = "0.7.13", features = ["compat"] }
+tonic = "=0.13.1" #gRPC
+clap = { version = "4.5.6", features = ["derive"] }
+futures = "0.3.31"
+libp2p = { version = "0.54.1", features = [ "tokio", "cbor", "dns", "identify", "kad", "noise", "relay", "rendezvous", "ping", "macros", "request-response", "tcp", "quic", "websocket", "yamux"] }
+libp2p-stream = "0.2.0-alpha"
+rand = "0.8.5"
+rustls-webpki = { version = "=0.103.4", features = ["aws-lc-rs"] }  # WebPKI X.509 validation - LOW RISK: rustls team
+tokio-rustls = { version = "=0.26.2", default-features = false, features = ["aws_lc_rs"] }  # Async TLS - LOW RISK: rustls team, memory-safe TLS implementation
+tracing = "0.1.41"
+toml = "0.9.8"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+x509-parser = { version = "=0.18.0", features = ["verify-aws"] }  # X.509 certificate parsing - LOW RISK: rusticata team
+
+[features]
+default = ["p2p", "insecure"]
+p2p = [
+    "kms/p2p",
+]
+insecure = ["kms/insecure",
+]
+
+
+[build-dependencies]
+prost-build = "0.13.5"
+protoc-bin-vendored = "3.2.0"
+tonic-build = "0.13.1"
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

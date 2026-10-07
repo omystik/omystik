@@ -1,0 +1,186 @@
+[package]
+name = "kms"
+repository.workspace = true
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib] # Central KMS
+name = "kms_lib"
+path = "src/lib.rs"
+crate-type = ["lib"]
+
+[[bin]] # Bin to generate keys
+name = "kms-gen-keys"
+path = "src/bin/kms-gen-keys.rs"
+required-features = ["testing", "threshold-fhe/testing"]
+
+[[bin]] # Bin to generate TLS certificates for the service
+name = "kms-gen-tls-certs"
+path = "src/bin/kms-gen-tls-certs.rs"
+
+[[bin]] # Bin to run the gRPC server
+name = "kms-server"
+path = "src/bin/kms-server.rs"
+
+[[bin]] # Bin to initialize the threshold KMS cluster after all nodes are up and running.
+name = "kms-init"
+path = "src/bin/kms-init.rs"
+
+[[bin]] # Bin for the custodians to generate keys and help in recovery
+name = "kms-custodian"
+path = "src/bin/kms-custodian.rs"
+
+[dependencies]
+# ⚠️ IMPORTANT: Add new dependencies to workspace root Cargo.toml, NOT here!
+# Use .workspace = true to reference workspace dependencies
+# Maintain alphabetical order
+aes.workspace = true
+aes-gcm.workspace = true
+aes-gcm-siv.workspace = true
+aes-prng.workspace = true
+alloy-dyn-abi.workspace = true
+alloy-primitives = { workspace = true, features = ["k256"] }
+alloy-signer.workspace = true
+alloy-signer-local.workspace = true
+alloy-sol-types = { workspace = true, features = ["eip712-serde"] }
+anyhow.workspace = true
+async_cell.workspace = true
+aws-config = { workspace = true, optional = true }
+aws-nitro-enclaves-nsm-api = { workspace = true, optional = true }
+aws-sdk-kms = { workspace = true, optional = true }
+aws-sdk-s3 = { workspace = true, optional = true }
+aws-smithy-runtime = { workspace = true, optional = true }
+aws-smithy-runtime-api = { workspace = true, optional = true }
+aws-smithy-types = { workspace = true, optional = true }
+bc2wrap.workspace = true
+bincode.workspace = true
+bip39.workspace = true
+cbc.workspace = true
+cfg-if.workspace = true
+clap = { workspace = true, features = ["derive"] }
+console_error_panic_hook.workspace = true
+enum_dispatch.workspace = true
+futures.workspace = true
+futures-util.workspace = true
+hex.workspace = true
+http-legacy.workspace = true
+hyper-rustls = { workspace = true, optional = true }
+itertools.workspace = true
+k256.workspace = true
+kms_api = { package = "kms-api", path = "../api", default-features = false}
+kms-grpc = { workspace = true, features = ["non-wasm"] }
+libp2p = { version = "0.54.1", features = [ "tokio", "cbor", "dns", "kad", "noise", "ping", "macros", "request-response", "tcp", "quic", "websocket", "yamux"] }
+libp2p_common = { path = "../../../libp2p_common" }
+lazy_static.workspace = true
+mesh_gateway_wire = { path = "../../../mesh_gateway_wire" }
+ml-kem.workspace = true
+nom.workspace = true
+observability = { workspace = true, optional = true }
+ordermap.workspace = true
+nsm-nitro-enclave-utils = { version = "0.1.2", features = ["pki"], optional = true }
+prost.workspace = true
+prost-types.workspace = true
+p384.workspace = true
+rand = { workspace = true, features = ["std", "std_rng"] }
+rasn.workspace = true
+rasn-cms.workspace = true
+rayon.workspace = true
+rcgen = { workspace = true, optional = true }
+rsa.workspace = true
+rustls-webpki = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive", "rc"] }
+serde-wasm-bindgen.workspace = true
+signature.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+tfhe = { workspace = true, features = [
+    "boolean",
+    "shortint",
+    "integer",
+    "zk-pok",
+    "experimental-force_fft_algo_dif4",
+    "extended-types",
+] }
+tfhe-versionable.workspace = true
+thiserror.workspace = true
+threshold-fhe = { workspace = true, default-features = false, features = [
+    "extension_degree_4",
+] }
+tokio = { workspace = true, features = [
+    "macros",
+    "rt-multi-thread",
+], optional = true }
+tokio-rustls = { workspace = true, optional = true }
+tokio-util.workspace = true
+tonic = { workspace = true, optional = true }
+tonic-health = { workspace = true, optional = true }
+tonic-tls = { workspace = true, optional = true }
+tower = { workspace = true, features = ["retry", "timeout"], optional = true }
+tower-http = { workspace = true, features = ["trace"], optional = true }
+tracing = { workspace = true, features = ["log"] }
+trait-variant.workspace = true
+url.workspace = true
+validator.workspace = true
+wasm-bindgen.workspace = true
+x509-parser = { workspace = true, optional = true }
+zeroize.workspace = true
+
+[dev-dependencies]
+# ⚠️ IMPORTANT: Add new dependencies to workspace root Cargo.toml, NOT here!
+# Use .workspace = true to reference workspace dependencies
+# Maintain alphabetical order
+assert_cmd.workspace = true
+backward-compatibility = { workspace = true, features = ["load", "tests"] }
+# Self-import for integration tests
+kms = { workspace = true, features = ["insecure", "testing"] }
+proptest.workspace = true
+rstest.workspace = true
+serial_test.workspace = true
+sysinfo.workspace = true
+tempfile.workspace = true
+tests-utils = { path = "./tests-utils" }
+threshold-fhe = { workspace = true, default-features = false, features = [
+    "testing", "malicious_strategies",
+] }
+tracing-subscriber = { workspace = true, features = ["fmt", "std"] }
+tracing-test.workspace = true
+
+[features]
+default = ["non-wasm"]
+p2p = []
+testing = []
+non-wasm = [
+    "threshold-fhe/non-wasm",
+    "kms-grpc/non-wasm",
+    "dep:aws-config",
+    "dep:aws-nitro-enclaves-nsm-api",
+    "dep:aws-sdk-kms",
+    "dep:aws-sdk-s3",
+    "dep:aws-smithy-runtime",
+    "dep:aws-smithy-runtime-api",
+    "dep:aws-smithy-types",
+    "dep:hyper-rustls",
+    "dep:observability",
+    "dep:rustls-webpki",
+    "dep:rcgen",
+    "dep:tokio",
+    "dep:tokio-rustls",
+    "dep:tonic",
+    "dep:tonic-tls",
+    "dep:tonic-health",
+    "dep:tower",
+    "dep:tower-http",
+    "dep:x509-parser",
+]
+slow_tests = ["testing"]
+wasm_tests = ["testing"]
+s3_tests = ["testing"]
+insecure = [
+    "kms-grpc/insecure",
+    "threshold-fhe/testing",
+    "dep:nsm-nitro-enclave-utils"
+]

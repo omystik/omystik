@@ -1,0 +1,67 @@
+[[node]]
+node_id = 1
+mpc_host = "XX.XXX.X.XX"
+mpc_port = 50001
+mpc_identity = "p1"
+secret_seed = 221
+peer_id  = "12D3KooWSnqjwGZfbyrfKqxFjYpNxdnFdqHCz3RCrMczaFpeHmgg"  # PeerId of node_fhe_1
+listen_address = "/ip4/XX.XXX.X.XX/udp/50100/quic-v1"
+mpc_protocol = "/threshold-fhe/1"
+mpc_core_config_path = "default_1.toml"
+mpc_public_storage = "./keys/PUB-p1"
+gateway_listen_addr = "/ip4/34.38.254.158/udp/8100/quic-v1"
+gateway_protocol = "/mesh/gateway/crypto/1"
+gateway_blob = "./data/"
+allowed_gateway_peers = [""]
+
+[[node]]
+node_id = 2
+mpc_host = "XX.XXX.X.XX"
+mpc_port = 50002
+mpc_identity = "p2"
+secret_seed = 222
+peer_id  = "12D3KooWCrxPuVxF6UhiL7TCRxE3PQs1YeGS1btyLL6wBKmEGuvT"
+listen_address = "/ip4/XX.XXX.X.XX/udp/50200/quic-v1"
+mpc_protocol = "/threshold-fhe/1"
+mpc_core_config_path = "default_2.toml"
+mpc_public_storage = "./keys/PUB-p2"
+gateway_listen_addr = "/ip4/34.77.30.3/udp/8200/quic-v1"
+gateway_protocol = "/mesh/gateway/crypto/1"
+gateway_blob = "./data/"
+allowed_gateway_peers = [""]
+
+[[node]]
+node_id = 3
+mpc_host = "XX.XXX.X.XX"
+mpc_port = 50003
+mpc_identity = "p3"
+secret_seed = 223
+peer_id  = "12D3KooWFWPkfGeiAmQeJdiHDCzkYjfEd2s8csMgrYuRVuvJn4rA"
+listen_address = "/ip4/XX.XXX.X.XX/udp/50300/quic-v1"
+mpc_protocol = "/threshold-fhe/1"
+mpc_core_config_path = "default_3.toml"
+mpc_public_storage = "./keys/PUB-p3"
+gateway_listen_addr = "/ip4/34.38.178.171/udp/8300/quic-v1"
+gateway_protocol = "/mesh/gateway/crypto/1"
+gateway_blob = "./data/"
+allowed_gateway_peers = [""]
+
+[[node]]
+node_id = 4
+mpc_host = "XX.XXX.X.XX"
+mpc_port = 50004
+mpc_identity = "p4"
+secret_seed = 224
+peer_id  = "12D3KooWG2KCzuUmuTboiwEqzj6hbncMTGssuHWzBTKUTZjbFJcw"
+listen_address = "/ip4/XX.XXX.X.XX/udp/50400/quic-v1"
+mpc_protocol = "/threshold-fhe/1"
+mpc_core_config_path = "default_4.toml"
+mpc_public_storage = "./keys/PUB-p4"
+gateway_listen_addr = "/ip4/130.211.111.119/udp/8400/quic-v1"
+gateway_protocol = "/mesh/gateway/crypto/1"
+gateway_blob = "./data/"
+allowed_gateway_peers = [""]
+
+[[contexts]]
+context_id_hex   = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+allowed_nodes  = [1, 2, 3, 4]
