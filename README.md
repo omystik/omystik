@@ -317,7 +317,7 @@ started.
 
 ## Lineage
 
-ØMYSTIK follows two earlier projects by the same author:
+ØMYSTIK follows three earlier projects by the same author:
 
 - **MYSTIK>p2p** (Nov 2024 to Mar 2025), persistent encrypted storage in a peer-to-peer
   network with queryable hashed metadata. Its storage model is Mesh A today; its original

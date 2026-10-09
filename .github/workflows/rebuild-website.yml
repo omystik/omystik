@@ -1,0 +1,27 @@
+# Rebuilds omystik.org when the docs change. The site (omystik/website)
+# fetches the .md files from this repo at build time.
+name: Rebuild website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.md'
+      - 'docs/**'
+      - 'image/**'
+
+permissions: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask omystik/website to rebuild omystik.org
+        env:
+          TOKEN: ${{ secrets.WEBSITE_REBUILD_TOKEN }}
+        run: |
+          curl --fail-with-body -sS -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/omystik/website/actions/workflows/deploy.yml/dispatches \
+            -d '{"ref":"main"}'
