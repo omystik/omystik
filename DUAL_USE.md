@@ -1,12 +1,5 @@
 # Dual-Use Notice and Responsible Use
 
-> **§5 is provisional.** A declaration covering this software is being prepared for
-> France's national cybersecurity agency (ANSSI), under décret n° 2007-663. That filing
-> adds to §5 rather than changing it: no export classification has been obtained, and an
-> ANSSI declaration is not one. The rest of this document is not affected. This note goes
-> when the declaration is filed.
-
----
 
 ## 1. What this software is
 
@@ -17,7 +10,7 @@
   fully homomorphic encryption (FHE) and threshold key management;
 - content is encrypted (XChaCha20Poly1305) and addressed by content identifier;
 - content's metadata is hashed into Merkle structures so it can be queried without being published
-  in the clear;
+  in the clear.
 
 Those properties exist to protect the people whose data crosses the mesh. The same
 properties make the system attractive to actors whose purposes are not legitimate. That
@@ -99,16 +92,20 @@ no representation about its export status.** Nothing here is legal advice.
 
 Regimes that may apply, depending on where you are and where the software goes:
 
-- **EU.** Regulation (EU) 2021/821 (dual-use recast). Cryptography falls under
-  Category 5 Part 2; some defense-adjacent items fall under national military lists.
-- **France.** Two separate obligations. The *Agence nationale de la sécurité des systèmes
-  d'information* (ANSSI) regime covers supplying, transferring and importing a means of
-  cryptology, and for most functions is satisfied by declaration. Taking the software
-  outside the EU is a different question, handled by the *Service des biens à double usage*
-  (SBDU) under the dual-use regulation. A declaration made to ANSSI is not an export
-  classification and authorizes no export.
-- **United States.** The Export Administration Regulations (EAR), Category 5 Part 2 for
-  encryption; ITAR if a deployment makes the software a defense article.
+- **EU.** Regulation (EU) 2021/821 (dual-use recast). <br>
+  Cryptography falls under Category 5 Part 2; some defense-adjacent items fall under national military lists.
+- **France.** <br> Two regimes may both apply, and they are cumulative rather than alternative.
+  The cryptology regime of décret n° 2007-663, administered by the *Agence nationale de la
+  sécurité des systèmes d'information* (ANSSI), covers supply, transfer to or from an EU
+  member state, import, and export to a state outside the EU; depending on the operation
+  and the category of the means, it proceeds by declaration or requires authorization.
+  A declaration and authorization request covering ØMYSTIK was filed with ANSSI on 7 October 2026, and is under review.<br><br>
+  Separately, Regulation (EU) 2021/821 governs the export of listed items out of the EU
+  and is administered in France by the *Service des biens à double usage* (SBDU), which
+  issues the export licence. Completing the first formality does not satisfy the second:
+  a declaration or authorization under décret n° 2007-663 is neither an export classification nor an export licence under Regulation (EU) 2021/821.
+- **United States.**<br>
+  The Export Administration Regulations (EAR), Category 5 Part 2 for encryption; ITAR if a deployment makes the software a defense article.
 
 These regimes share common technical categories because they all implement the Wassenaar Arrangement, the multilateral basis behind most dual-use export control.
 
