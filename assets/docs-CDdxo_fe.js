@@ -90,14 +90,6 @@ CLA to sign.</p>
 <p>Be straightforward and courteous. Assume the other person is acting in good faith and is
 short on time. Technical disagreement is welcome; personal hostility is not.</p>
 `},{route:`/dual-use/`,source:`DUAL_USE.md`,title:`Dual-Use Notice and Responsible Use`,html:`<h1 id="dual-use-notice-and-responsible-use">Dual-Use Notice and Responsible Use</h1>
-<blockquote>
-<p><strong>§5 is provisional.</strong> A declaration covering this software is being prepared for
-France&#39;s national cybersecurity agency (ANSSI), under décret n° 2007-663. That filing
-adds to §5 rather than changing it: no export classification has been obtained, and an
-ANSSI declaration is not one. The rest of this document is not affected. This note goes
-when the declaration is filed.</p>
-</blockquote>
-<hr>
 <h2 id="1-what-this-software-is">1. What this software is</h2>
 <p>ØMYSTIK is a peer-to-peer mesh in which:</p>
 <ul>
@@ -106,7 +98,7 @@ when the declaration is filed.</p>
 fully homomorphic encryption (FHE) and threshold key management;</li>
 <li>content is encrypted (XChaCha20Poly1305) and addressed by content identifier;</li>
 <li>content&#39;s metadata is hashed into Merkle structures so it can be queried without being published
-in the clear;</li>
+in the clear.</li>
 </ul>
 <p>Those properties exist to protect the people whose data crosses the mesh. The same
 properties make the system attractive to actors whose purposes are not legitimate. That
@@ -179,16 +171,20 @@ in many jurisdictions.</p>
 no representation about its export status.</strong> Nothing here is legal advice.</p>
 <p>Regimes that may apply, depending on where you are and where the software goes:</p>
 <ul>
-<li><strong>EU.</strong> Regulation (EU) 2021/821 (dual-use recast). Cryptography falls under
-Category 5 Part 2; some defense-adjacent items fall under national military lists.</li>
-<li><strong>France.</strong> Two separate obligations. The <em>Agence nationale de la sécurité des systèmes
-d&#39;information</em> (ANSSI) regime covers supplying, transferring and importing a means of
-cryptology, and for most functions is satisfied by declaration. Taking the software
-outside the EU is a different question, handled by the <em>Service des biens à double usage</em>
-(SBDU) under the dual-use regulation. A declaration made to ANSSI is not an export
-classification and authorizes no export.</li>
-<li><strong>United States.</strong> The Export Administration Regulations (EAR), Category 5 Part 2 for
-encryption; ITAR if a deployment makes the software a defense article.</li>
+<li><strong>EU.</strong> Regulation (EU) 2021/821 (dual-use recast). <br>
+Cryptography falls under Category 5 Part 2; some defense-adjacent items fall under national military lists.</li>
+<li><strong>France.</strong> <br> Two regimes may both apply, and they are cumulative rather than alternative.
+The cryptology regime of décret n° 2007-663, administered by the <em>Agence nationale de la
+sécurité des systèmes d&#39;information</em> (ANSSI), covers supply, transfer to or from an EU
+member state, import, and export to a state outside the EU; depending on the operation
+and the category of the means, it proceeds by declaration or requires authorization.
+A declaration and authorization request covering ØMYSTIK was filed with ANSSI on 7 October 2026, and is under review.<br><br>
+Separately, Regulation (EU) 2021/821 governs the export of listed items out of the EU
+and is administered in France by the <em>Service des biens à double usage</em> (SBDU), which
+issues the export licence. Completing the first formality does not satisfy the second:
+a declaration or authorization under décret n° 2007-663 is neither an export classification nor an export licence under Regulation (EU) 2021/821.</li>
+<li><strong>United States.</strong><br>
+The Export Administration Regulations (EAR), Category 5 Part 2 for encryption; ITAR if a deployment makes the software a defense article.</li>
 </ul>
 <p>These regimes share common technical categories because they all implement the Wassenaar Arrangement, the multilateral basis behind most dual-use export control.</p>
 <p>Before you export, re-export, or make this software available across a border, or provide
