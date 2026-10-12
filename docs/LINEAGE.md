@@ -105,7 +105,7 @@ rights-management layer does not carry over; ØMYSTIK has no blockchain componen
 
 ## External context
 
-On 2 June 2025, NATO's Defence Innovation Accelerator for the North Atlantic (DIANA)
+On 2 June 2025, [NATO's Defence Innovation Accelerator for the North Atlantic (DIANA)](https://www.nato.int/en/about-us/organization/nato-structure/defence-innovation-accelerator-for-the-north-atlantic-diana)
 published its 2026 Advanced Communication Technologies challenge. That challenge
 independently identifies several technical areas overlapping the direction of ØMYSTIK:
 resilient and decentralised communications, packet-switched mesh networks, edge computing,
